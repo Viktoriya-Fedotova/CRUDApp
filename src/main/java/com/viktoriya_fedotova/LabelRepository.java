@@ -1,63 +1,177 @@
 package main.java.com.viktoriya_fedotova;
 
-import java.io.FileOutputStream;
-import java.io.File;
-import java.io.IOException;
+import java.io.*;
 import java.util.*;
 
 public class LabelRepository {
 
-    private List<Label> labelList = new ArrayList<>();
-    File filePath = new File("C:\\IdeaProjects\\CrudApp\\src\\main\\resources\\files\\labels.txt");
+    final File filePath = new File("C:\\IdeaProjects\\CrudApp\\src\\main\\resources\\files\\labels.txt");
 
-    Label save(Label l) throws IOException {
-        FileOutputStream file = new FileOutputStream(filePath);
-        byte buf[] = l.toString().getBytes();
-        for (int i = 0; i < buf.length; i++) {
-            file.write(buf[i]);
-            labelList.add(l);
-            break;
+    Label save(Label l) {
+        List<Label> labelList = new ArrayList<>();
+        labelList.add(l);
+
+        try(FileWriter fileWriter = new FileWriter(filePath, true)) {
+            for (Label label : labelList) {
+                fileWriter.write(label + "\n");
+            }
+
+        } catch (IOException e) {
+            System.out.println(e.getMessage());
         }
-        file.close();
-
         return l;
-
-       /* labelList.add(l);
-        FileWriter writer = new FileWriter("C:\\IdeaProjects\\CrudApp\\src\\main\\resources\\files\\labels.txt");
-        for (Label x : labelList) {
-            String name = x.getName();
-            Long id = x.getId();
-            writer.write(id + ". " + name + ";");
-        } */
     }
 
     Label getById(Long id) {
-        Label l = null;
-        for (Label x : labelList) {
-            if (x.getId() == id) {
-                l = x;
+       Label l = null;
+       List<String> auxiliaryList = new ArrayList<>();
+       List<Label> labelList = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            Scanner scanner = new Scanner(bufferedReader);
+
+            while (scanner.hasNextLine()) {
+                auxiliaryList.add(scanner.nextLine());
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        for (String str : auxiliaryList) {
+            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
+            String idFromStr = str.split("\\.")[0];
+            Long convertIdFromStr = Long.parseLong(idFromStr);
+            l = new Label(convertIdFromStr, nameFromStr);
+            labelList.add(l);
+        }
+
+        for (Label label : labelList) {
+            if (label.getId() == id) {
+                l = label;
                 break;
             }
         }
+
         return l;
 
     }
 
     List<Label> getAll() {
+        Label l = null;
+        List<String> auxiliaryList = new ArrayList<>();
+        List<Label> labelList = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            Scanner scanner = new Scanner(bufferedReader);
+
+            while (scanner.hasNextLine()) {
+                auxiliaryList.add(scanner.nextLine());
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+        for (String str : auxiliaryList) {
+            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
+            String idFromStr = str.split("\\.")[0];
+            Long convertIdFromStr = Long.parseLong(idFromStr);
+            l = new Label(convertIdFromStr, nameFromStr);
+            labelList.add(l);
+        }
+
         return labelList;
 
     }
 
    Label update(Label l) {
-        Label label = getById(l.getId());
-        label.setName(l.getName());
+       List<String> auxiliaryList = new ArrayList<>();
+       List<Label> labelList = new ArrayList<>();
+       try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+           Scanner scanner = new Scanner(bufferedReader);
 
+           while (scanner.hasNextLine()) {
+               auxiliaryList.add(scanner.nextLine());
+           }
 
-        return l;
+       } catch (FileNotFoundException e) {
+           e.printStackTrace();
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+
+       Label label = null;
+
+       for (String str : auxiliaryList) {
+           String nameFromStr = str.substring(str.lastIndexOf(".") +1);
+           String idFromStr = str.split("\\.")[0];
+           Long convertIdFromStr = Long.parseLong(idFromStr);
+           label = new Label(convertIdFromStr, nameFromStr);
+           labelList.add(label);
+
+           }
+
+       for(Label newLabel : labelList) {
+           if (newLabel.getId().equals(l.getId())) {
+               newLabel.setName(l.getName());
+
+               break;
+
+           } else new IOException("The element is missing!");
+
+       }
+
+       try(FileWriter writer = new FileWriter(filePath)) {
+          for (Label newLabel : labelList) {
+              writer.write(newLabel + "\n");
+          }
+
+       } catch (IOException e) {
+           e.printStackTrace();
+       }
+       return label;
     }
 
     void deleteById(Long id) {
+        Label l = null;
+        List<String> auxiliaryList = new ArrayList<>();
+        List<Label> labelList = new ArrayList<>();
+        try (BufferedReader bufferedReader = new BufferedReader(new FileReader(filePath))) {
+            Scanner scanner = new Scanner(bufferedReader);
+
+            while (scanner.hasNextLine()) {
+                auxiliaryList.add(scanner.nextLine());
+            }
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        for (String str : auxiliaryList) {
+            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
+            String idFromStr = str.split("\\.")[0];
+            Long convertIdFromStr = Long.parseLong(idFromStr);
+            l = new Label(convertIdFromStr, nameFromStr);
+            labelList.add(l);
+        }
+
         labelList.remove(getById(id));
+
+        try(FileWriter writer = new FileWriter(filePath)) {
+            for (Label newLabel : labelList) {
+                writer.write(newLabel + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
     }
 
 }

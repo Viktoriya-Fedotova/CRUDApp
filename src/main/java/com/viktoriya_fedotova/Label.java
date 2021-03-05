@@ -1,18 +1,17 @@
 package main.java.com.viktoriya_fedotova;
 
-import java.io.Serializable;
 import java.util.Objects;
 
-public class Label implements Serializable {
+public class Label {
 
     private Long id;
     private String name;
-    String fullName;
+
 
     protected Label(Long id, String name) {
         this.id = id;
         this.name = name;
-        this.fullName = id + ". " + name;
+
     }
 
     public Long getId() {
@@ -24,7 +23,7 @@ public class Label implements Serializable {
     }
 
     public String getName() {
-        return fullName;
+        return name;
     }
 
     public void setName(String name) {
@@ -33,7 +32,7 @@ public class Label implements Serializable {
 
     @Override
     public String toString() {
-        return id + ". " + name + ";";
+        return id + ". " + name;
     }
 
     @Override
