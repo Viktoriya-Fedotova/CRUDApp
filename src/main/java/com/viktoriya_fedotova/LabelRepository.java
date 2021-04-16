@@ -2,13 +2,22 @@ package main.java.com.viktoriya_fedotova;
 
 import java.io.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class LabelRepository {
 
-    final File filePath = new File("C:\\IdeaProjects\\CrudApp\\src\\main\\resources\\files\\labels.txt");
+    final File filePath = new File("./src/main/resources/files/labels.txt");
+
+    private static Long idCounter = 1L;
+
+
+    Long generateId() {
+        return idCounter++;
+    }
 
     Label save(Label l) {
         List<Label> labelList = new ArrayList<>();
+        l.setId(generateId());
         labelList.add(l);
 
         try(FileWriter fileWriter = new FileWriter(filePath, true)) {
@@ -19,6 +28,15 @@ public class LabelRepository {
         } catch (IOException e) {
             System.out.println(e.getMessage());
         }
+        return l;
+    }
+
+    Label convertFromStrToLabel(String str) {
+        String nameFromStr = str.substring(str.lastIndexOf("|") +1);
+        String idFromStr = str.split("\\|")[0];
+        Long convertIdFromStr = Long.parseLong(idFromStr);
+        Label l = new Label(convertIdFromStr, nameFromStr);
+        l.setId(convertIdFromStr);
         return l;
     }
 
@@ -41,15 +59,11 @@ public class LabelRepository {
 
 
         for (String str : auxiliaryList) {
-            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
-            String idFromStr = str.split("\\.")[0];
-            Long convertIdFromStr = Long.parseLong(idFromStr);
-            l = new Label(convertIdFromStr, nameFromStr);
-            labelList.add(l);
+            labelList.add(convertFromStrToLabel(str));
         }
 
         for (Label label : labelList) {
-            if (label.getId() == id) {
+            if (label.getId().equals(id)) {
                 l = label;
                 break;
             }
@@ -78,11 +92,7 @@ public class LabelRepository {
 
 
         for (String str : auxiliaryList) {
-            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
-            String idFromStr = str.split("\\.")[0];
-            Long convertIdFromStr = Long.parseLong(idFromStr);
-            l = new Label(convertIdFromStr, nameFromStr);
-            labelList.add(l);
+            labelList.add(convertFromStrToLabel(str));
         }
 
         return labelList;
@@ -105,26 +115,19 @@ public class LabelRepository {
            e.printStackTrace();
        }
 
-       Label label = null;
 
        for (String str : auxiliaryList) {
-           String nameFromStr = str.substring(str.lastIndexOf(".") +1);
-           String idFromStr = str.split("\\.")[0];
-           Long convertIdFromStr = Long.parseLong(idFromStr);
-           label = new Label(convertIdFromStr, nameFromStr);
-           labelList.add(label);
+           labelList.add(convertFromStrToLabel(str));
 
            }
 
-       for(Label newLabel : labelList) {
-           if (newLabel.getId().equals(l.getId())) {
-               newLabel.setName(l.getName());
+       labelList.stream().map(e -> {
+           if (e.getId().equals(l.getId())) {
+               e.setName(l.getName());
+           }
+           return e;
+       }).collect(Collectors.toList());
 
-               break;
-
-           } else new IOException("The element is missing!");
-
-       }
 
        try(FileWriter writer = new FileWriter(filePath)) {
           for (Label newLabel : labelList) {
@@ -134,7 +137,7 @@ public class LabelRepository {
        } catch (IOException e) {
            e.printStackTrace();
        }
-       return label;
+       return l;
     }
 
     void deleteById(Long id) {
@@ -155,14 +158,10 @@ public class LabelRepository {
         }
 
         for (String str : auxiliaryList) {
-            String nameFromStr = str.substring(str.lastIndexOf(".") +1);
-            String idFromStr = str.split("\\.")[0];
-            Long convertIdFromStr = Long.parseLong(idFromStr);
-            l = new Label(convertIdFromStr, nameFromStr);
-            labelList.add(l);
+            labelList.add(convertFromStrToLabel(str));
         }
 
-        labelList.remove(getById(id));
+        labelList.removeIf(t -> t.getId().equals(id));
 
         try(FileWriter writer = new FileWriter(filePath)) {
             for (Label newLabel : labelList) {

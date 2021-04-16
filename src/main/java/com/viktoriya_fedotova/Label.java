@@ -1,14 +1,14 @@
 package main.java.com.viktoriya_fedotova;
 
 import java.util.Objects;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Label {
 
     private Long id;
     private String name;
 
-
-    protected Label(Long id, String name) {
+    public Label(Long id, String name) {
         this.id = id;
         this.name = name;
 
@@ -16,6 +16,7 @@ public class Label {
 
     public Long getId() {
         return id;
+
     }
 
     public void setId(Long id) {
@@ -32,7 +33,7 @@ public class Label {
 
     @Override
     public String toString() {
-        return id + ". " + name;
+        return id + "| " + name;
     }
 
     @Override

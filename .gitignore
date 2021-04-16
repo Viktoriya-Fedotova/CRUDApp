@@ -1,7 +1,7 @@
 .idea/
+.out/
 *.iml
 *.iws
 *.jar
 *.war
 *.ear
-.out/
